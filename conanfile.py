@@ -44,7 +44,8 @@ class LibhandlerConan(ConanFile):
         command = tools.msvc_build_command(
             self.settings, 
             sln_path, 
-            targets = [self.name]
+            targets = [self.name],
+            toolset=self.settings.compiler.toolset
         )            
         self.output.info("Running command: " + command)
         self.run(command)
