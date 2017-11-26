@@ -41,7 +41,6 @@ class LibhandlerConan(ConanFile):
     def build_vs(self):
         sln_path = os.path.join("sources", "ide","msvc","libhandler.sln")
         arch = "x86" if self.settings.arch == "x86" else "x64"
-        target = "cl-{arch}-pc-windows".format(arch=arch)
         command = tools.msvc_build_command(
             self.settings, 
             sln_path, 
