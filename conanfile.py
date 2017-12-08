@@ -45,7 +45,7 @@ class LibhandlerConan(ConanFile):
             self.settings, 
             sln_path, 
             targets=[self.name],
-            arch=arch
+            arch=arch,
             toolset=self.settings.compiler.toolset,
             force_vcvars=False
         )            
