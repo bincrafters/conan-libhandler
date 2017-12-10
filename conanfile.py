@@ -13,7 +13,6 @@ class LibhandlerConan(ConanFile):
     license = "https://raw.githubusercontent.com/koka-lang/libhandler/master/license.txt"
     exports_sources = ["LICENSE"]
     settings = "os", "arch", "compiler", "build_type"
-    requires = "libuv/[>=1.15.0]@bincrafters/stable"
     
     def source(self):
         source_url = "https://github.com/koka-lang/libhandler"
