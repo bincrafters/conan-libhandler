@@ -1,33 +1,46 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, tools
+from conans import ConanFile, tools, MSBuild, AutoToolsBuildEnvironment
 import os
 
 
 class LibhandlerConan(ConanFile):
     name = "libhandler"
     version = "0.5"
-    url = "https://github.com/bincrafters/conan-libhandler"
     description = "Libhandler implements algebraic effects and handlers in portable C99. Monads for free in C."
-    license = "https://raw.githubusercontent.com/koka-lang/libhandler/master/license.txt"
-    exports_sources = ["LICENSE"]
+    url = "https://github.com/bincrafters/conan-libhandler"
+    homepage = "https://github.com/koka-lang/libhandler" 
+    author = "Bincrafters <bincrafters@gmail.com>"
+    license = "MIT"
+    exports = ["LICENSE.md"]
+    generators = "visual_studio"
     settings = "os", "arch", "compiler", "build_type"
+    options = {"shared": [True, False], "fPIC": [True, False]}
+    default_options = "shared=False", "fPIC=True"
+    source_subfolder = "source_subfolder"
+    build_subfolder = "build_subfolder"
+    
+    def configure(self):
+        if self.settings.os == 'Windows':
+            del self.options.fPIC
     
     def source(self):
         source_url = "https://github.com/koka-lang/libhandler"
         tools.get("{0}/archive/v{1}.tar.gz".format(source_url, self.version))
         extracted_dir = self.name + "-" + self.version
-        os.rename(extracted_dir, "sources")
-        #Rename to "sources" is a convention to simplify later steps
-
+        os.rename(extracted_dir, self.source_subfolder)
+        
     def build(self):
         if self.settings.compiler == 'Visual Studio':
             self.build_vs()
-
+        else:
+            self.build_make()
+            
     def package(self):
-        self.copy(pattern="LICENSE")
-        self.copy(pattern="*.h", dst="include", src=os.path.join("sources","inc"))
+        self.copy(pattern="license.txt", dst="license", src=self.source_subfolder)
+        include_folder = os.path.join(self.source_subfolder, "inc")
+        self.copy(pattern="*.h", dst="include", src=include_folder)
         self.copy(pattern="*.dll", dst="bin", keep_path=False)
         self.copy(pattern="*.lib", dst="lib", keep_path=False)
         self.copy(pattern="*.a", dst="lib", keep_path=False)
@@ -38,15 +51,12 @@ class LibhandlerConan(ConanFile):
         self.cpp_info.libs = tools.collect_libs(self)
         
     def build_vs(self):
-        sln_path = os.path.join("sources", "ide","msvc","libhandler.sln")
-        arch = "x86" if self.settings.arch == "x86" else "x64"
-        command = tools.msvc_build_command(
-            self.settings, 
-            sln_path, 
-            targets=[self.name],
-            arch=arch,
-            toolset=self.settings.compiler.toolset,
-            force_vcvars=False
-        )            
-        self.output.info("Running command: " + command)
-        self.run(command)
+        sln_path = os.path.join(self.source_subfolder, "ide","msvc","libhandler.sln")
+        msbuild = MSBuild(self)
+        msbuild.build(sln_path, targets=["libhandler"])
+
+    def build_make(self):
+        with tools.chdir(self.source_subfolder):
+            autotools = AutoToolsBuildEnvironment(self)
+            autotools.configure()
+            autotools.make()
