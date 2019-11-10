@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 from conans import ConanFile, tools, MSBuild, AutoToolsBuildEnvironment
 import os
 
@@ -11,7 +8,6 @@ class LibhandlerConan(ConanFile):
     description = "Libhandler implements algebraic effects and handlers in portable C99. Monads for free in C."
     url = "https://github.com/bincrafters/conan-libhandler"
     homepage = "https://github.com/koka-lang/libhandler" 
-    author = "Bincrafters <bincrafters@gmail.com>"
     license = "MIT"
     exports = ["LICENSE.md"]
     generators = "visual_studio"
