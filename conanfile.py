@@ -9,7 +9,6 @@ class LibhandlerConan(ConanFile):
     url = "https://github.com/bincrafters/conan-libhandler"
     homepage = "https://github.com/koka-lang/libhandler" 
     license = "MIT"
-    exports = ["LICENSE.md"]
     generators = "visual_studio"
     settings = "os", "arch", "compiler", "build_type"
     options = {"shared": [True, False], "fPIC": [True, False]}
